@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, Image, ActivityIndicator } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchTasks, deleteTask } from '../slices/tasksSlice';
+import { fetchTasks, deleteTask, addTask } from '../slices/tasksSlice'; // Đảm bảo thêm addTask
 
 const Screen2 = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -13,26 +13,24 @@ const Screen2 = ({ route, navigation }) => {
 
   useEffect(() => {
     if (route.params?.newTask) {
-      const newTask = { id: (tasks.length + 1).toString(), task: route.params.newTask };
-      dispatch(addTask(newTask));
-      route.params.newTask = null;
+      const newTask = { id: (tasks.length + 1).toString(), ...route.params.newTask }; // Sử dụng data đầy đủ
+      dispatch(addTask(newTask)); // Gọi hàm addTask
+      route.params.newTask = null; // Reset tham số
     }
   }, [route.params?.newTask, tasks]);
 
-const renderItem = ({ item }) => (
-  <View style={styles.taskContainer}>
-    {/* Kiểm tra nếu có hình ảnh trong đối tượng item */}
-    {item.img && <Image source={{ uri: item.img }} style={styles.taskImage} />}
-    <Text style={styles.taskText}>{item.username}</Text> {/* Thay đổi để hiển thị tên người dùng */}
-    <TouchableOpacity onPress={() => dispatch(deleteTask(item.id))}>
-      <Text style={styles.deleteButton}>Xóa</Text>
-    </TouchableOpacity>
-    <TouchableOpacity onPress={() => navigation.navigate('Sua', { task: item })}>
-      <Text style={styles.editButton}>Sửa</Text>
-    </TouchableOpacity>
-  </View>
-);
-
+  const renderItem = ({ item }) => (
+    <View style={styles.taskContainer}>
+      {item.img && <Image source={{ uri: item.img }} style={styles.taskImage} />}
+      <Text style={styles.taskText}>{item.username}</Text>
+      <TouchableOpacity onPress={() => dispatch(deleteTask(item.id))}>
+        <Text style={styles.deleteButton}>Xóa</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('Sua', { task: item })}>
+        <Text style={styles.editButton}>Sửa</Text>
+      </TouchableOpacity>
+    </View>
+  );
 
   if (loading) {
     return (

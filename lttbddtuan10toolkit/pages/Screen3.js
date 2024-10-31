@@ -14,18 +14,22 @@ const Screen3 = ({ navigation }) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            task: job, // Trường 'task' tương ứng với dữ liệu cần thêm
+            username: job, // Thay 'task' bằng 'username' theo cấu trúc API của bạn
           }),
         });
+
+        if (!response.ok) {
+          throw new Error('Failed to add job'); // Ném lỗi nếu không thành công
+        }
 
         const data = await response.json();
 
         // Xác nhận thành công và quay về Screen2
         Alert.alert('Success', 'Job added successfully!');
-        navigation.navigate('Screen2', { newTask: data.task });
+        navigation.navigate('Screen2', { newTask: data }); // Truyền data thay vì data.task
       } catch (error) {
         console.error('Error adding task:', error);
-        Alert.alert('Error', 'Something went wrong while adding the task.');
+        Alert.alert('Error', 'Something went wrong while adding the job.');
       }
     } else {
       Alert.alert('Input Required', 'Please enter a job before adding.');
